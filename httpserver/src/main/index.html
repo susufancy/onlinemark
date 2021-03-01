@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarkImage</title>
+  <style>
+    .container {
+      width: 800px;
+      height: 600px;
+    }
+
+    .on {
+      background-color: #f00;
+      color: #fff;
+    }
+
+    canvas {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container"></div>
+  <button onclick="markImage.zoomIn()">放大</button>
+  <button onclick="markImage.zoomOut()">缩小</button>
+  <button onclick="markImage.fitting()">适配</button>
+  <button id="sw" onclick="swichLock()">平移</button id="sw">
+  <button onclick="newimage()">更新</button>
+  <button onclick="sendmessage()">保存</button>
+  <input type="text" id="num" placeholder="请输入删除选区的索引">
+  <button onclick="markImage.remove(document.querySelector('#num').value)">删除</button>
+  <div>(打开控制台查看数据输出)</div>
+</body>
+<script src="./MarkImage.js"></script>
+<script>
+  var listd;
+  const markImage = new MarkImage({
+    el: '.container',
+    imageSrc: './test.jpg',
+    showLabel: true, // 默认为true
+    showPix: true, // 默认为true
+    data: [
+      
+    ],
+    onLoad() {},
+    onSelect(index, coor) {
+      console.log(index, coor)
+    },
+    onResult(list) {
+      console.log(list)
+      listd=list
+    }
+  })
+  
+  function newimage() {
+    location.reload();
+  }
+  function sendmessage() {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+    {
+      // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+      xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {
+      // IE6, IE5 浏览器执行代码
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function()
+    {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+      {
+        document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+      }
+    }
+    xmlhttp.open("GET",listd+".message",true);
+    xmlhttp.send();
+  }
+
+  function swichLock() {
+    markImage.setAutoLock((type) => {
+      const sw = document.querySelector('#sw')
+      if (type) {
+        sw.classList.remove('on')
+        sw.innerText = '平移'
+      } else {
+        sw.classList.add('on')
+        sw.innerText = '锁定'
+      }
+    })
+
+  }
+
+</script>
+
+</html>
